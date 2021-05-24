@@ -26,7 +26,7 @@ def proccessData(df):
     return df
 
 
-def datasetToStandard(df):
+def datasetToXY(df):
     clase = df.columns[-1]
     y = df[clase]
     x = df.iloc[:, :-1]
@@ -37,12 +37,14 @@ def main():
     trainingPath, testingPath, k = argumentExist()
     training = proccessData(dataFrame(trainingPath))
     testing = proccessData(dataFrame(testingPath))
-    x, y = datasetToStandard(training)
-    testingX, testingY = datasetToStandard(testing)
+    x, y = datasetToXY(training)
+    testingX, testingY = datasetToXY(testing)
     neigh = KNeighborsClassifier(n_neighbors=k)
     neigh.fit(x.values, y.values)
-    # print(neigh.predict([testingX.values[1]]))
-    # print(testingY.values[1])
+    predY = neigh.predict(testingX.values)
+    print("Recall:", recall_score(testingY.values, predY, average="weighted"))
+    print("F1 Score:", f1_score(testingY.values, predY,average="weighted"))
+    print("Accuracy:", accuracy_score(testingY.values, predY))
 
 
 if __name__ == '__main__':
