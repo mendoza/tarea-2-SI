@@ -16,12 +16,15 @@ def argumentExist():
         sys.exit(1)
     return dataset, eps, min_samples
 
+def main():
+    path, eps, min_samples = argumentExist()
+    X = npArrayFromCSV(path)
+    dbscan = DBSCAN(eps=eps, min_samples=min_samples)
+    dbscan.fit(X)
+    x = X[:, 0]
+    y = X[:, 1]
+    plt.scatter(x, y, c=dbscan.labels_)
+    plt.show()
 
-path, eps, min_samples = argumentExist()
-X = npArrayFromCSV(path)
-dbscan = DBSCAN(eps=eps, min_samples=min_samples)
-dbscan.fit(X)
-x = X[:, 0]
-y = X[:, 1]
-plt.scatter(x, y, c=dbscan.labels_)
-plt.show()
+if __name__ == '__main__':
+    main()

@@ -16,12 +16,18 @@ def argumentExist():
     return dataset, clusters
 
 
-path, clusters = argumentExist()
-X = npArrayFromCSV(path)
-# Clusters es None por mientras se prueba threshold
-agglomerative = AgglomerativeClustering(n_clusters=None, linkage="ward",distance_threshold=0.25)
-agglomerative.fit(X)
-x = X[:, 0]
-y = X[:, 1]
-plt.scatter(x, y, c=agglomerative.labels_)
-plt.show()
+def main():
+    path, clusters = argumentExist()
+    X = npArrayFromCSV(path)
+    # Clusters es None por mientras se prueba threshold
+    agglomerative = AgglomerativeClustering(
+        n_clusters=None, linkage="ward", distance_threshold=0.25)
+    agglomerative.fit(X)
+    x = X[:, 0]
+    y = X[:, 1]
+    plt.scatter(x, y, c=agglomerative.labels_)
+    plt.show()
+
+
+if __name__ == '__main__':
+    main()
