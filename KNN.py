@@ -1,7 +1,9 @@
 import sys
+from numpy.core.numeric import indices
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import recall_score, f1_score, accuracy_score
 from generic import dataFrame
+import pandas as pd
 
 
 def argumentExist():
@@ -18,12 +20,66 @@ def argumentExist():
 
 
 def proccessData(df):
-    x = {'si': 1, 'no': 0, 'A': 1, 'B': 2, 'C': 3,
-         '30-80': 1, '80-120': 2, '120+': 3, 'real': 1, 'ficticia': 0, 'lineal': 1, 'mosaico': 2, 'circulo': 3, 'contemporaneo': 1, 'futuro': 2, 'pasado': 3, 'simple': 1, 'compleja': 0, 'horror': 1, 'accion': 2, 'comedia': 3, 'drama': 4}
+    df2 = pd.DataFrame({
+        'animada': [],
+        'basada_libro': [],
+        'A': [],
+        'B': [],
+        'C': [],
+        'desenlace_feliz': [],
+        '30-80':  [],
+        '80-120': [],
+        '120+': [],
+        'lineal': [],
+        'mosaico': [],
+        'circulo': [],
+        'real': [],
+        'ficticia': [],
+        'saga': [],
+        'contemporaneo': [],
+        'futuro': [],
+        'pasado': [],
+        'simple': [],
+        'compleja': [],
+        'class': []
+    })
 
-    for col in df.columns:
-        df[col] = df[col].map(x)
-    return df
+    classes = ['horror', 'accion', 'comedia', 'drama']
+    for row in range(len(df.values)):
+        new_row = {
+            'animada': 0,
+            'basada_libro': 0,
+            'A': 0,
+            'B': 0,
+            'C': 0,
+            'desenlace_feliz': 0,
+            '30-80':  0,
+            '80-120': 0,
+            '120+': 0,
+            'lineal': 0,
+            'mosaico': 0,
+            'circulo': 0,
+            'real': 0,
+            'ficticia': 0,
+            'saga': 0,
+            'contemporaneo': 0,
+            'futuro': 0,
+            'pasado': 0,
+            'simple': 0,
+            'compleja': 0,
+            'class': 0
+        }
+        for header in df.columns:
+            if header in new_row.keys():
+                if header == 'class':
+                    new_row[header] = classes.index(df[header].iloc[row])
+                    continue
+                new_row[header] = 1 if df[header].iloc[row] == 'si' else 0
+            else:
+                name = df[header].iloc[row]
+                new_row[name] = 1
+        df2 = df2.append(new_row, ignore_index=True)
+    return df2
 
 
 def datasetToXY(df):
@@ -37,14 +93,30 @@ def main():
     trainingPath, testingPath, k = argumentExist()
     training = proccessData(dataFrame(trainingPath))
     testing = proccessData(dataFrame(testingPath))
+
     x, y = datasetToXY(training)
+
     testingX, testingY = datasetToXY(testing)
     neigh = KNeighborsClassifier(n_neighbors=k)
     neigh.fit(x.values, y.values)
-    predY = neigh.predict(testingX.values)
-    print("Recall:", recall_score(testingY.values, predY, average="weighted"))
-    print("F1 Score:", f1_score(testingY.values, predY,average="weighted"))
-    print("Accuracy:", accuracy_score(testingY.values, predY))
+
+    classes = ['horror', 'accion', 'comedia', 'drama']
+    for j in range(len(classes)):
+        indixes = []
+        for i in range(len(testingX)):
+            if testingY.values[i] == j:
+                indixes.append(i)
+        X = []
+        Y = []
+        for i in indixes:
+            X.append(testingX.values[i])
+            Y.append(testingY.values[i])
+
+        pred = neigh.predict(X)
+        print(f"Haciendo la evaluacion de la clase {classes[j]}")
+        print("Recall:", recall_score(Y, pred, average="weighted",zero_division=0))
+        print("F1 Score:", f1_score(Y, pred, average="weighted"))
+        print("Accuracy:", accuracy_score(Y, pred))
 
 
 if __name__ == '__main__':
