@@ -1,7 +1,7 @@
 import sys
-from numpy.core.numeric import indices
+import time
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.metrics import recall_score, f1_score, accuracy_score
+from sklearn.metrics import accuracy_score, classification_report
 from generic import dataFrame
 import pandas as pd
 
@@ -99,24 +99,11 @@ def main():
     testingX, testingY = datasetToXY(testing)
     neigh = KNeighborsClassifier(n_neighbors=k)
     neigh.fit(x.values, y.values)
-
-    classes = ['horror', 'accion', 'comedia', 'drama']
-    for j in range(len(classes)):
-        indixes = []
-        for i in range(len(testingX)):
-            if testingY.values[i] == j:
-                indixes.append(i)
-        X = []
-        Y = []
-        for i in indixes:
-            X.append(testingX.values[i])
-            Y.append(testingY.values[i])
-
-        pred = neigh.predict(X)
-        print(f"Haciendo la evaluacion de la clase {classes[j]}")
-        print("Recall:", recall_score(Y, pred, average="weighted",zero_division=0))
-        print("F1 Score:", f1_score(Y, pred, average="weighted"))
-        print("Accuracy:", accuracy_score(Y, pred))
+    start = time.time()
+    TestingPredict = neigh.predict(testingX)
+    tiempo = f'Tiempo: {time.time() - start}'
+    print(classification_report(testingY, TestingPredict, zero_division=0, digits=4))
+    print(tiempo)
 
 
 if __name__ == '__main__':
