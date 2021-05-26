@@ -1,9 +1,6 @@
 import sys
-from numpy.core.numeric import indices
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.metrics import recall_score, f1_score, accuracy_score
-from sklearn import tree
-from sklearn.tree import DecisionTreeClassifier
+import time
+from sklearn.tree import DecisionTreeClassifier, export_text
 from sklearn.metrics import classification_report, confusion_matrix
 from generic import dataFrame
 import pandas as pd
@@ -14,10 +11,10 @@ def argumentExist():
         trainingPath = sys.argv[1]
         testingPath = sys.argv[2]
         criterio = sys.argv[3]
-        max_depth = int(sys.argv[4])
+        max_depth = int(sys.argv[4]) if sys.argv[4] != 'None' else None
     except IndexError:
         print(
-            "Por favor proporcione ambos valores, ingresando el training primero luego el testing y al final k"
+            "Por favor proporcione todos los valores, ingresando el training primero, luego el testing, luego el criterio y para terminar el depth maximo"
         )
         sys.exit(1)
     return trainingPath, testingPath, criterio, max_depth
@@ -54,31 +51,16 @@ def main():
         criterion=criterio, max_depth=max_depth)
 
     classifier.fit(x, y)
-
+    start = time.time()
     y_pred = classifier.predict(testingX)
+    tiempo = f'Tiempo: {time.time() - start}'
 
     # print(y_pred)
-
-    print(confusion_matrix(testingY, y_pred))
-    print(classification_report(testingY, y_pred))
-
-    # classes = ['horror', 'accion', 'comedia', 'drama']
-    # for j in range(len(classes)):
-    #     indixes = []
-    #     for i in range(len(testingX)):
-    #         if testingY.values[i] == j:
-    #             indixes.append(i)
-    #     X = []
-    #     Y = []
-    #     for i in indixes:
-    #         X.append(testingX.values[i])
-    #         Y.append(testingY.values[i])
-
-    # pred = neigh.predict(X)
-    # print(f"Haciendo la evaluacion de la clase {classes[j]}")
-    # print("Recall:", recall_score(Y, pred, average="weighted",zero_division=0))
-    # print("F1 Score:", f1_score(Y, pred, average="weighted"))
-    # print("Accuracy:", accuracy_score(Y, pred))
+    tree_rules = export_text(classifier, feature_names=list(x.columns))
+    print(tree_rules)
+    print(tiempo)
+    # print(confusion_matrix(testingY, y_pred))
+    print(classification_report(testingY, y_pred, zero_division=0, digits=4))
 
 
 if __name__ == '__main__':
