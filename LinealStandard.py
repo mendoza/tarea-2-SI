@@ -12,8 +12,9 @@ def main():
     x_test, y_test = datasetToXY(dataFrame(testPath))
     scaler = StandardScaler()
     x_train = scaler.fit_transform(x_train)
+    x_test = scaler.transform(x_test)
 
-    lin = LinearRegression(fit_intercept=False)
+    lin = LinearRegression()
     lin.fit(x_train, y_train)
 
     print(mean_squared_error(y_test, lin.predict(x_test)))

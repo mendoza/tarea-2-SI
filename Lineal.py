@@ -5,15 +5,16 @@ from generic import dataFrame, datasetToXY
 
 def main():
     trainingPath = 'regression_train.csv'
-    X, Y = datasetToXY(dataFrame(trainingPath))
+    x_train, y_train = datasetToXY(dataFrame(trainingPath))
 
     testPath = 'regression_test.csv'
-    x, y = datasetToXY(dataFrame(testPath))
+    x_test, y_test = datasetToXY(dataFrame(testPath))
 
-    lin = Lasso()
-    lin.fit(X, Y)
+    lin = LinearRegression()
+    lin.fit(x_train, y_train)
 
-    print(mean_squared_error(y, lin.predict(x)))
+    print(mean_squared_error(y_test, lin.predict(x_test)))
+    print(mean_squared_error(y_train, lin.predict(x_train)))
     print(lin.coef_)
     print(lin.intercept_)
 
