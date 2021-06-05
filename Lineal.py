@@ -1,26 +1,21 @@
-import sys
 from sklearn.linear_model import LinearRegression, Lasso
 from sklearn.metrics import mean_squared_error
-from generic import dataFrame
+from generic import dataFrame, datasetToXY
 
 
 def main():
-    pathTraining = 'regression_train.csv'
-    X = dataFrame(pathTraining)
-    Y = X[X.columns[-1]]
-    X = X.iloc[:, :-1]
+    trainingPath = 'regression_train.csv'
+    X, Y = datasetToXY(dataFrame(trainingPath))
 
-    pathTesting = 'regression_test.csv'
-    x = dataFrame(pathTesting)
-    y = x[x.columns[-1]]
-    x = x.iloc[:, :-1]
+    testPath = 'regression_test.csv'
+    x, y = datasetToXY(dataFrame(testPath))
 
-    reg = LinearRegression(normalize=True)
-    reg.fit(X, Y)
+    lin = Lasso()
+    lin.fit(X, Y)
 
-    print(mean_squared_error(reg.predict(x), y))
-    print(reg.coef_)
-    print(reg.intercept_)
+    print(mean_squared_error(y, lin.predict(x)))
+    print(lin.coef_)
+    print(lin.intercept_)
 
 
 if __name__ == '__main__':

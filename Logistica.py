@@ -1,9 +1,8 @@
-import sys
 import time
 from scipy.sparse.construct import rand
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import classification_report
-from generic import dataFrame
+from generic import dataFrame, datasetToXY
 
 
 def mapear(mapa, df):
@@ -13,23 +12,24 @@ def mapear(mapa, df):
 
 
 def main():
-    pathTraining = 'seguros_training_data.csv'
-    X = dataFrame(pathTraining)
-    Y = X[X.columns[-1]].map({'plan_C': 1, 'plan_B': 0})
-    X = mapear({'Si': 1, 'No': 0}, X.iloc[:, :-1])
+    trainingPath = 'seguros_training_data.csv'
+    x_train, y_train = datasetToXY(dataFrame(trainingPath))
+    y_train = y_train.map({'plan_C': 1, 'plan_B': 0})
+    x_train = mapear({'Si': 1, 'No': 0}, x_train)
 
-    pathTesting = 'seguros_testing_data.csv'
-    x = dataFrame(pathTesting)
-    y = x[x.columns[-1]].map({'plan_C': 1, 'plan_B': 0})
-    x = mapear({'Si': 1, 'No': 0}, x.iloc[:, :-1])
+    testPath = 'seguros_testing_data.csv'
+    x_test, y_test = datasetToXY(dataFrame(testPath))
+    y_test = y_test.map({'plan_C': 1, 'plan_B': 0})
+    x_test = mapear({'Si': 1, 'No': 0}, x_test)
 
-    reg = LogisticRegression(random_state=0)
-    reg.fit(X, Y)
+    log = LogisticRegression()
+    log.fit(x_train, y_train)
 
     start = time.time()
-    pred_y = reg.predict(x)
+    y_pred = log.predict(x_test)
     print(f'Time: {time.time() - start}')
-    print(classification_report(y, pred_y))
+    print(abs(log.coef_))
+    print(classification_report(y_test, y_pred))
 
 
 if __name__ == '__main__':
