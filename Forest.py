@@ -57,22 +57,22 @@ def main():
                 n_estimators=n_estimators, criterion=criterion, max_depth=max_depth, max_features=max_features)
             forest.fit(x_train, y_train)
 
-            dicts.append(classification_report(
-                y_test, forest.predict(x_test), output_dict=True))
-            for i in range(4):
-                combinations.append('|'.join([
-                    str(n_estimators),
-                    criterion,
-                    str(max_depth),
-                    max_features
-                ]))
+            report = classification_report(
+                y_test, forest.predict(x_test), output_dict=True)
 
-    df = pd.DataFrame({}, columns=['test', 'class', 'f1'])
+            report['combination'] = '|'.join([
+                str(n_estimators),
+                criterion,
+                str(max_depth),
+                max_features])
+
+            dicts.append(report)
+
+    df = pd.DataFrame({}, columns=['test', 'class', 'f1', 'combination'])
     for dicty in dicts:
         for i in range(4):
             df = df.append({'test': dicts.index(
-                dicty), 'class': i, 'f1': dicty[str(i)]['f1-score']}, ignore_index=True)
-    df['combination'] = combinations
+                dicty), 'class': i, 'f1': dicty[str(i)]['f1-score'], 'combination': dicty['combination']}, ignore_index=True)
     df.to_csv('metrics.csv', index=False)
 
 
