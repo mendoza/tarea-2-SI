@@ -60,19 +60,23 @@ def main():
             report = classification_report(
                 y_test, forest.predict(x_test), output_dict=True)
 
-            report['combination'] = '|'.join([
-                str(n_estimators),
-                criterion,
-                str(max_depth),
-                max_features])
+            report['combination'] = {
+                "arboles": str(n_estimators),
+                "criterio": criterion,
+                "profundidad": str(max_depth),
+                "caracteristicas": max_features}
 
             dicts.append(report)
 
-    df = pd.DataFrame({}, columns=['test', 'class', 'f1', 'combination'])
+    df = pd.DataFrame(
+        {}, columns=['conf_id', 'f1-0', 'f1-1', 'f1-2', 'f1-3', 'arboles', 'criterio', 'profundidad', 'caracteristicas'])
     for dicty in dicts:
-        for i in range(4):
-            df = df.append({'test': dicts.index(
-                dicty), 'class': i, 'f1': dicty[str(i)]['f1-score'], 'combination': dicty['combination']}, ignore_index=True)
+        df = df.append({'conf_id': dicts.index(
+            dicty), 'f1-0': dicty["0"]['f1-score'], 'f1-1': dicty["1"]['f1-score'], 'f1-2': dicty["2"]['f1-score'], 'f1-3': dicty["3"]['f1-score'],
+            "arboles": dicty['combination']["arboles"],
+            "criterio": dicty['combination']["criterio"],
+            "profundidad": dicty['combination']["profundidad"],
+            "caracteristicas": dicty['combination']["caracteristicas"]}, ignore_index=True)
     df.to_csv('metrics.csv', index=False)
 
 

@@ -1,7 +1,7 @@
 import time
 from scipy.sparse.construct import rand
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import classification_report
+from sklearn.metrics import classification_report, mean_squared_error
 from generic import dataFrame, datasetToXY
 
 
@@ -28,7 +28,11 @@ def main():
     start = time.time()
     y_pred = log.predict(x_test)
     print(f'Time: {time.time() - start}')
+    print(log.coef_)
     print(abs(log.coef_))
+    print(max(log.coef_[0]))
+    print(min(log.coef_[0]))
+    print(mean_squared_error(y_test, y_pred))
     print(classification_report(y_test, y_pred))
 
 
