@@ -1,7 +1,5 @@
 import json
 import pandas as pd
-from scipy.sparse import data
-from scipy.sparse.construct import rand
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import classification_report
 from generic import dataFrame, datasetToXY
@@ -45,7 +43,6 @@ def main():
 
     x_test, y_test = datasetToXY(testing)
     dicts = []
-    combinations = []
     for key in params.keys():
         for inner in params[key]['values']:
             n_estimators = params['n_estimators']['default'] if key != 'n_estimators' else inner
